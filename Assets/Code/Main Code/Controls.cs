@@ -11,6 +11,8 @@ public class NewBehaviourScript : MonoBehaviour
 {
 
     public Transform WinCondiotionsTransform;
+    public AudioClip jumpSound;
+    public AudioClip shrinkSound;
 
     [Range(5, 25)]
     public float speed = 7.0f;
@@ -21,8 +23,10 @@ public class NewBehaviourScript : MonoBehaviour
     SpriteRenderer sr;
     Animator anim;
     GroundCheck gc;
+    AudioSource audioSource;
 
     public Transform turretTransform;
+    [SerializeField] private AudioClip deathSound;
 
     [Range(0.8f, 5f)]
     public float groundCheckRadius = 0.8f;
@@ -41,6 +45,7 @@ public class NewBehaviourScript : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         gc = GetComponent<GroundCheck>();
+        audioSource = GetComponent<AudioSource>();
 
         GameObject newGameObject = new GameObject();
         newGameObject.transform.SetParent(transform);
@@ -78,29 +83,60 @@ public class NewBehaviourScript : MonoBehaviour
             //if (Input.GetButtonDown("Jump") && isGrounded && rb.velocity.y <= 0)
             //{
                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            
             //}
             CheckIsGrounded();
         }
-
+        
         void CheckIsGrounded()
         {
             if (isGrounded)
             {
                 Debug.Log($"Ground check working");
-                if (rb.velocity.y <= 0) isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
-                rb.AddForce(new Vector2(0, calculatedJumpForce), ForceMode2D.Impulse);
-                if (Input.GetButtonDown("Jump") && isGrounded && isGrounded && rb.velocity.y <= 0)
+
+                if (rb.velocity.y <= 0)
+                    isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
+
+                // Play the jump sound when the player jumps (on the ground)
+                if (Input.GetButtonDown("Jump") && isGrounded && rb.velocity.y <= 0)
                 {
                     if (rb.velocity.y < 1)
                     {
-                        canJump();
+                        // Play the jump sound
+                        //audioSource.PlayOneShot(jumpSound);
+
+                        // Make the player jump
+                        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                     }
                 }
             }
-            else isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
+            else
+            {
+                isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
+            }
         }
 
-        
+        //void CheckIsGrounded()
+        //{
+        //    if (isGrounded)
+        //    {
+        //        Debug.Log($"Ground check working");
+
+        //        if (rb.velocity.y <= 0) isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
+        //        rb.AddForce(new Vector2(0, calculatedJumpForce), ForceMode2D.Impulse);
+        //        if (Input.GetButtonDown("Jump") && isGrounded && isGrounded && rb.velocity.y <= 0)
+        //        {
+
+        //            if (rb.velocity.y < 1)
+        //            {
+        //                canJump();
+        //            }
+        //        }
+        //    }
+        //    else isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
+        //}
+
+
 
         if (!isGrounded)
         {
@@ -142,8 +178,9 @@ public class NewBehaviourScript : MonoBehaviour
     {
 
         ChangeScale(scaleSet);
+        audioSource.PlayOneShot(shrinkSound);
 
-        
+
         yield return new WaitForSeconds(10);
 
        
@@ -159,11 +196,59 @@ public class NewBehaviourScript : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy") && CompareTag("Player"))
         {
-            Destroy(gameObject);
+            //audioSource.PlayOneShot(deathSound);
+
+            Destroy(gameObject, deathSound.length);
             SceneManager.LoadScene("Game Over");
         }
     }
 }
 
-      
+//private void OnCollisionEnter2D(Collision2D collision)
+//{
+//    if (collision.gameObject.CompareTag("Enemy") && CompareTag("Player"))
+//    {
+//        // Play the death sound immediately
+//        audioSource.PlayOneShot(deathSound);
+
+//        // Start a coroutine to handle the death process, including the scene change
+//        StartCoroutine(HandleDeath());
+//    }
+//}
+
+//IEnumerator HandleDeath()
+//{
+//    // Wait for the length of the death sound to finish playing
+//    yield return new WaitForSeconds(deathSound.length);
+
+//    // Destroy the player after the sound is finished
+//    Destroy(gameObject);
+
+//    // Load the "Game Over" scene after the player has been destroyed
+//    SceneManager.LoadScene("Game Over");
+//}
+
+//private void OnCollisionEnter2D(Collision2D collision)
+//{
+//    if (collision.gameObject.CompareTag("Enemy") && CompareTag("Player"))
+//    {
+//        // Play the death sound
+//        audioSource.PlayOneShot(deathSound);
+
+//        // Destroy the player after the death sound has finished playing
+//        Destroy(gameObject, deathSound.length);
+
+//        // Start a coroutine to wait for the death sound to finish before loading the game over scene
+//        StartCoroutine(LoadGameOverScene(deathSound.length));
+//    }
+//}
+
+//IEnumerator LoadGameOverScene(float delay)
+//{
+//    // Wait for the specified time (death sound length)
+//    yield return new WaitForSeconds(delay);
+
+//    // Load the "Game Over" scene
+//    SceneManager.LoadScene("Game Over");
+//}    
 

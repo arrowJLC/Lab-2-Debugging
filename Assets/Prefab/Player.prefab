@@ -196,11 +196,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WinCondiotionsTransform: {fileID: 0}
+  jumpSound: {fileID: 8300000, guid: e8e376d49f0e3934f91abc0691454130, type: 3}
+  shrinkSound: {fileID: 8300000, guid: 2e8a8647e4bc12c4c8a0bf9c1f42051e, type: 3}
   speed: 7
   jumpForce: 7
   turretTransform: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 70f522f04727b0a4aba19c8733491300, type: 3}
   groundCheckRadius: 2.01
   scaleSet: 0.1
+  ChangeSclae: 1
   isGroundLayer:
     serializedVersion: 2
     m_Bits: 1

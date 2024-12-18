@@ -6,6 +6,9 @@ public class Pickups : MonoBehaviour
 {
     private Renderer visablitiy;
     private Collider collider;
+    public AudioClip pickupSound;
+    SpriteRenderer sr;
+    AudioSource audioSource;
     Animator anim;
 
     NewBehaviourScript pc;
@@ -27,6 +30,11 @@ public class Pickups : MonoBehaviour
         visablitiy = GetComponent<Renderer>();
         collider = GetComponent<Collider>();
         pc = GetComponent<NewBehaviourScript>();
+
+        sr = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
+
+        audioSource.outputAudioMixerGroup = GameManager.Instance.SFXGroup;
     }
 
     public void ToggleObjectVisibility(bool isVisible)
@@ -58,7 +66,10 @@ public class Pickups : MonoBehaviour
                     pc.shrinkPowerUp();
                     break;
             }
-            Destroy(gameObject);
+            sr.enabled = false;
+            audioSource.PlayOneShot(pickupSound);
+
+            Destroy(gameObject, pickupSound.length);
         }
 
         if (collision.gameObject.CompareTag("Player") && CompareTag("Key"))
